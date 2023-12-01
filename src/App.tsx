@@ -1,26 +1,41 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+// Import Brace and the AceEditor Component
+import brace from 'brace';
+import AceEditor from 'react-ace';
+
+// Import a Mode (language)
+import 'brace/mode/python';
+
+// Import a Theme (okadia, github, xcode etc)
+import 'brace/theme/ambiance';
+
+export default class App extends React.Component {
+
+    constructor(props: {}, context: any) {
+        super(props, context);
+        
+        this.onChange = this.onChange.bind(this);
+    }
+
+    onChange(newValue: any) {
+        console.log('change', newValue);
+    }
+
+    render() {
+        return (
+            <div>
+                <AceEditor
+                    mode="python"
+                    theme="ambiance"
+                    onChange={this.onChange}
+                    name="UNIQUE_ID_OF_DIV"
+                    editorProps={{
+                        $blockScrolling: true
+                    }}
+                    style={{width: "400px"}}
+                />
+            </div>
+        );
+    }
 }
-
-export default App;
