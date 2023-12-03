@@ -3,29 +3,103 @@ import React from 'react';
 // Import Brace and the AceEditor Component
 import brace from 'brace';
 import AceEditor from 'react-ace';
-
+import { jsPython } from 'jspython-interpreter';
 // Import a Mode (language)
 import 'brace/mode/python';
+import 'ace-builds/src-noconflict/ace';
 
-// Import a Theme (okadia, github, xcode etc)
+// // Import a Theme (okadia, github, xcode etc)
 import 'brace/theme/ambiance';
 
-export default class App extends React.Component {
+import { styled } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Unstable_Grid2';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Stack from '@mui/material/Stack';
+
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+}));
+
+interface MyState {
+  outputResult: string;
+}
+var code = "";
+// var outputResult = "asd"
+
+
+
+export default class App extends React.Component<{}, MyState> {
+  
 
     constructor(props: {}, context: any) {
         super(props, context);
-        
+        this.state = {
+          outputResult: '',
+      };
         this.onChange = this.onChange.bind(this);
     }
 
     onChange(newValue: any) {
         console.log('change', newValue);
+        code = newValue;
     }
+
+    // EvaluatePython () {
+
+    handleClick = (value) => () => {
+      console.log(code);
+      // this.evaluatePython(code);
+      // const [userInput, setUserInput] = React.useState("asd");
+      // const [outputResult, setOutput] = React.useState("asd");
+      
+      if(value == "evaluate") {
+          const interpreter = jsPython();
+          interpreter.evaluate(code).then(res => {
+            this.setState({
+              outputResult: JSON.stringify(res),
+            });
+            // setOutput(JSON.stringify(res));
+            
+            console.log(res); // 5
+          })  
+      } else if (value=="clear") {
+        this.setState({
+          outputResult: "",
+        });
+      }
+      
+    };
+  // }
+    //   evaluatePython =(pythonCode  ) => () => {
+    //     const [outputResult, setOutput] = React.useState("asd");
+    
+    //     const script = `
+        
+    //     `;
+    //     const interpreter = jsPython();
+    //     interpreter.evaluate(pythonCode).then(res => {
+    //       setOutput(JSON.stringify(res));
+          
+    //       console.log(res); // 5
+    //     })
+    //     return 0;
+    // }
+      
 
     render() {
         return (
-            <div>
-                <AceEditor
+           
+            <Box sx={{ flexGrow: 1 }}>
+            <Grid container spacing={3}>
+              <Grid xs="auto">
+              <AceEditor
                     mode="python"
                     theme="ambiance"
                     onChange={this.onChange}
@@ -33,9 +107,29 @@ export default class App extends React.Component {
                     editorProps={{
                         $blockScrolling: true
                     }}
-                    style={{width: "400px"}}
+                    style={{width: "600px"}}
                 />
-            </div>
+              </Grid>
+              <Grid xs="auto">
+                <Stack direction="column" spacing={2}>
+                  <Button variant="contained" onClick={this.handleClick('evaluate')}>Run</Button>
+                  <Button variant="contained" onClick={this.handleClick('clear')}>Clear</Button>
+                </Stack>
+              </Grid>
+              <Grid xs>
+                <TextField
+                    id="filled-multiline-static"
+                    label="Output"
+                    multiline
+                    rows={4}
+                    value={this.state.outputResult}
+                    defaultValue="Default Value"
+                    variant="filled"
+                  />
+              </Grid>
+            </Grid>
+          </Box>
         );
+        
     }
 }
