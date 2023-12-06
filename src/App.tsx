@@ -18,6 +18,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
+import { usePython } from 'react-py';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -35,65 +36,56 @@ var code = "";
 
 
 
-export default class App extends React.Component<{}, MyState> {
+// export default class App extends React.Component<{}, MyState> {
+  export default function App() {
   
 
-    constructor(props: {}, context: any) {
-        super(props, context);
-        this.state = {
-          outputResult: '',
-      };
-        this.onChange = this.onChange.bind(this);
-    }
+    // constructor(props: {}, context: any) {
+    //     super(props, context);
+    //     this.state = {
+    //       outputResult: '',
+    //   };
+    const { runPython, stdout, stderr, isLoading, isRunning } = usePython()
 
-    onChange(newValue: any) {
-        console.log('change', newValue);
-        code = newValue;
-    }
 
+    //     this.onChange = this.onChange.bind(this);
+    // }
+
+    // const onChange= (newValue) => () => {
+    //     console.log('change', newValue);
+    //     code = newValue;
+    // }
+    var code = ''
+    function onChange(newValue) {
+      console.log("change", newValue);
+      code = newValue;
+    }
     // EvaluatePython () {
 
-    handleClick = (value) => () => {
+    const handleClick = (value) => () => {
       console.log(code);
       // this.evaluatePython(code);
       // const [userInput, setUserInput] = React.useState("asd");
       // const [outputResult, setOutput] = React.useState("asd");
-      
+      const script = `
+      x = [1, 2, 3]
+      if 1 in x:
+        print('1 present')
+      `;
+
       if(value == "evaluate") {
-          const interpreter = jsPython();
-          interpreter.evaluate(code).then(res => {
-            this.setState({
-              outputResult: JSON.stringify(res),
-            });
-            // setOutput(JSON.stringify(res));
-            
-            console.log(res); // 5
-          })  
+        runPython(code);
       } else if (value=="clear") {
-        this.setState({
-          outputResult: "",
-        });
+        // this.setState({
+        //   outputResult: "",
+        // });
       }
       
     };
-  // }
-    //   evaluatePython =(pythonCode  ) => () => {
-    //     const [outputResult, setOutput] = React.useState("asd");
-    
-    //     const script = `
-        
-    //     `;
-    //     const interpreter = jsPython();
-    //     interpreter.evaluate(pythonCode).then(res => {
-    //       setOutput(JSON.stringify(res));
-          
-    //       console.log(res); // 5
-    //     })
-    //     return 0;
-    // }
+ 
       
 
-    render() {
+    
         return (
            
             <Box sx={{ flexGrow: 1 }}>
@@ -102,7 +94,7 @@ export default class App extends React.Component<{}, MyState> {
               <AceEditor
                     mode="python"
                     theme="ambiance"
-                    onChange={this.onChange}
+                    onChange={onChange}
                     name="UNIQUE_ID_OF_DIV"
                     editorProps={{
                         $blockScrolling: true
@@ -112,8 +104,11 @@ export default class App extends React.Component<{}, MyState> {
               </Grid>
               <Grid xs="auto">
                 <Stack direction="column" spacing={2}>
-                  <Button variant="contained" onClick={this.handleClick('evaluate')}>Run</Button>
-                  <Button variant="contained" onClick={this.handleClick('clear')}>Clear</Button>
+                  <Button variant="contained" onClick={handleClick('evaluate')}
+                  
+                  disabled={isLoading || isRunning}
+                  >{!isRunning ? 'Run' : 'Running...'}</Button>
+                  <Button variant="contained" onClick={handleClick('clear')}>Clear</Button>
                 </Stack>
               </Grid>
               <Grid xs>
@@ -122,14 +117,22 @@ export default class App extends React.Component<{}, MyState> {
                     label="Output"
                     multiline
                     rows={4}
-                    value={this.state.outputResult}
+                    value={stdout}
                     defaultValue="Default Value"
                     variant="filled"
                   />
+                    <p>Output</p>
+                      <pre>
+                        <code>{stdout}</code>
+                      </pre>
+                      <p>Error</p>
+                      <pre>
+                        <code>{stderr}</code>
+                      </pre>
               </Grid>
             </Grid>
           </Box>
         );
         
     }
-}
+
