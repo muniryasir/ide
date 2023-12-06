@@ -106,7 +106,7 @@ var code = "";
                 <Stack direction="column" spacing={2}>
                   <Button variant="contained" onClick={handleClick('evaluate')}
                   
-                  disabled={isLoading || isRunning}
+                  // disabled={isLoading || isRunning}
                   >{!isRunning ? 'Run' : 'Running...'}</Button>
                   <Button variant="contained" onClick={handleClick('clear')}>Clear</Button>
                 </Stack>
