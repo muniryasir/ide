@@ -8,8 +8,9 @@ import { jsPython } from 'jspython-interpreter';
 import 'brace/mode/python';
 import 'ace-builds/src-noconflict/ace';
 
-// // Import a Theme (okadia, github, xcode etc)
+// Import a Theme (okadia, github, xcode etc)
 import 'brace/theme/ambiance';
+import { render } from 'react-dom';
 
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -20,6 +21,9 @@ import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
 import { usePython } from 'react-py';
 import Textarea from '@mui/joy/Textarea';
+import { PythonProvider } from 'react-py';
+import Codeblock from './CodeBlock';
+
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -32,13 +36,13 @@ const Item = styled(Paper)(({ theme }) => ({
 interface MyState {
   outputResult: string;
 }
-var code = "";
 // var outputResult = "asd"
 
 
 
 // export default class App extends React.Component<{}, MyState> {
-  export default function App() {
+
+export default function App() {
   
 
     // constructor(props: {}, context: any) {
@@ -46,7 +50,7 @@ var code = "";
     //     this.state = {
     //       outputResult: '',
     //   };
-    const { runPython, stdout, stderr, isLoading, isRunning } = usePython()
+    const { runPython, stdout, stderr, isLoading, isRunning, isAwaitingInput, sendInput } = usePython()
     const [example, setExample] = useState('')
     const [code, setCode] = useState('')
     const [result, setResult] = useState('')
@@ -87,13 +91,13 @@ var code = "";
         // setResult(JSON.stringify(isLoading || isRunning)+'-'+JSON.stringify(isLoading)+'-'+JSON.stringify(isLoading))
           // console.log(res);
        
-        let output = ` 
-          Output
-          ${stdout}
-          Error
-          ${stderr}
-                  `
-          setResult(output);
+        // let output = ` 
+        //   Output
+        //   ${stdout}
+        //   Error
+        //   ${stderr}
+        //           `
+        //   setResult(output);
           
           
         
@@ -205,7 +209,8 @@ for r in result:
 
     
         return (
-           
+          // <PythonProvider>
+
             <Box sx={{ flexGrow: 1 }}>
             <Grid container spacing={3}>
             <Grid xs={12}>
@@ -239,12 +244,14 @@ for r in result:
                 </Stack>
               </Grid>
               <Grid xs>
-              {/* <Textarea placeholder="Type anything…" 
-              defaultValue={result}
-              /> */}
+              
                    <p>Output</p>
       <pre>
-        <code>{stdout}</code>
+        <code>
+        <Textarea placeholder="Type anything…" 
+              defaultValue={stdout} disabled={!isAwaitingInput}
+              />   
+          </code>
       </pre>
       <p>Error</p>
       <pre>
@@ -253,8 +260,28 @@ for r in result:
         
               </Grid>
             </Grid>
-          </Box>
+            </Box>
+          // </PythonProvider>
+
         );
         
     }
+
+
+
+/*
+export default function App() {
+  return (
+    // Add the provider to your app
+    <PythonProvider>
+      <Codeblock />
+    </PythonProvider>
+      
+  )
+}
+*/
+
+
+
+
 
