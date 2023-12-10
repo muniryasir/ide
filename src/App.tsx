@@ -249,7 +249,7 @@ for r in result:
       <pre>
         <code>
         <Textarea placeholder="Type anything…" 
-              defaultValue={stdout} disabled={!isAwaitingInput}
+              defaultValue={stdout} 
               />   
           </code>
       </pre>
